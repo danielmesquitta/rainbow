@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 export class CreateUserDTO {
   @ApiProperty({ example: 'João da Silva' })
@@ -18,10 +18,12 @@ export class CreateUserDTO {
   })
   document: string;
 
-  @ApiProperty({ example: '#ffffff' })
+  @ApiProperty({ example: '#E81416' })
   @IsNotEmpty({ message: 'A cor favorita é obrigatória' })
   @Matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
   favoriteColor: string;
 
+  @ApiPropertyOptional({ example: 'Observações' })
+  @IsOptional()
   observations?: string;
 }
