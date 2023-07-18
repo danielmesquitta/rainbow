@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PaginateService } from '~/common/services/paginate.service';
 import { DatabaseService } from '~/database/services/database.service';
 import { CreateUserService } from './services/create-user.service';
+import { DeleteUserService } from './services/delete-user.service';
 import { GetUserService } from './services/get-user.service';
 import { ListUsersService } from './services/list-users.service';
 import { UpdateUserService } from './services/update-user.service';
@@ -12,6 +13,7 @@ const userServices = [
   UpdateUserService,
   GetUserService,
   ListUsersService,
+  DeleteUserService,
 ];
 
 @Module({

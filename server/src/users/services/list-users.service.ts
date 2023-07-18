@@ -16,7 +16,7 @@ export class ListUsersService {
 
   async execute({ page = 1, pageLength = 10 }: ListUsersServiceData) {
     /**
-     * Validate if user exists
+     * Generate pagination args and response body
      */
     const { args, response } = this.paginateService.execute<
       PaginatedResponse<User[]>,
@@ -26,14 +26,18 @@ export class ListUsersService {
       page,
     });
 
+    /**
+     * Get users and total count
+     */
     const [users, total] = await this.db.$transaction([
       this.db.user.findMany(args),
-
       this.db.user.count(),
     ]);
 
+    /**
+     * Set response data
+     */
     response.data = users;
-
     response.total = total;
 
     return response;
