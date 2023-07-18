@@ -6,7 +6,7 @@ import {
 import { DatabaseService } from '~/database/services/database.service';
 import { UpdateUserDTO } from '~/users/dtos/update-user-dto';
 import { allowedColors } from '../constants/allowed-colors';
-import { UpdateUserParamsDTO } from '../dtos/update-params-dto';
+import { UpdateUserParamsDTO } from '../dtos/update-user-params-dto';
 
 type UpdateUserServiceData = UpdateUserDTO & UpdateUserParamsDTO;
 
