@@ -3,7 +3,7 @@ import { Prisma, User } from '@prisma/client';
 import { PaginatedResponse } from '~/common/interfaces/paginated-response.interface';
 import { PaginateService } from '~/common/services/paginate.service';
 import { DatabaseService } from '~/database/services/database.service';
-import { ListUsersQueryDTO } from '../dtos/list-users-query.dto';
+import { ListUsersQueryDTO } from '~/users/dtos/list-users-query.dto';
 
 type ListUsersServiceData = ListUsersQueryDTO;
 

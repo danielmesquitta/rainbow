@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '~/database/services/database.service';
-import { DeleteUserParamsDTO } from '../dtos/delete-user-params-dto';
+import { DeleteUserParamsDTO } from '~/users/dtos/delete-user-params-dto';
 
 type DeleteUserServiceData = DeleteUserParamsDTO;
 

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from '~/database/services/database.service';
+import { allowedColors } from '~/users/constants/allowed-colors';
 import { CreateUserDTO } from '~/users/dtos/create-user-dto';
-import { allowedColors } from '../constants/allowed-colors';
 
 type CreateUserServiceData = CreateUserDTO;
 

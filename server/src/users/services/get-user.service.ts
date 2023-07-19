@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '~/database/services/database.service';
-import { GetUserParamsDTO } from '../dtos/get-user-params-dto';
+import { GetUserParamsDTO } from '~/users/dtos/get-user-params-dto';
 
 type GetUserServiceData = GetUserParamsDTO;
 
