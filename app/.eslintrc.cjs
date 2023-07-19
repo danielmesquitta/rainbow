@@ -6,7 +6,6 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:react-hooks/recommended',
   ],
   parser: '@typescript-eslint/parser',
@@ -18,10 +17,11 @@ module.exports = {
   },
   plugins: ['react-refresh'],
   rules: {
+    '@typescript-eslint/no-misused-promises': 'off',
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
     '@typescript-eslint/no-non-null-assertion': 'off',
   },
-}
+};
