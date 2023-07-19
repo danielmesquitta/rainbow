@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 export class CreateUserDTO {
   @ApiProperty({ example: 'João da Silva' })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O nome é obrigatório' })
   name: string;
 
   @ApiProperty({ example: 'johndoe@email.com' })
@@ -20,7 +20,9 @@ export class CreateUserDTO {
 
   @ApiProperty({ example: '#E81416' })
   @IsNotEmpty({ message: 'A cor favorita é obrigatória' })
-  @Matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+  @Matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+    message: 'A cor favorita deve possuir formato hexadecimal',
+  })
   favoriteColor: string;
 
   @ApiPropertyOptional({ example: 'Observações' })
