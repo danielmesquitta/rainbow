@@ -31,5 +31,7 @@ export const defaultTheme = {
     'secondary-300': '#EBE5F9',
     'secondary-500': '#8047F8',
     'secondary-700': '#4B2995',
+
+    'error-300': '#FF1B39',
   },
 };

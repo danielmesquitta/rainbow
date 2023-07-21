@@ -10,6 +10,7 @@ import { Input } from '~/components/Input';
 import { Textarea } from '~/components/Textarea';
 import { api } from '~/utils/api';
 import { formatError } from '~/utils/formatError';
+import { colorPattern, cpfPattern } from '~/utils/patterns';
 import { FormContainer, FormFooter, FormGrid, HomeContainer } from './styles';
 
 const colors = {
@@ -23,22 +24,10 @@ const colors = {
 } as const;
 
 const userFormValidationSchema = z.object({
-  name: z.string().min(1, 'O nome é obrigatório'),
-  email: z
-    .string()
-    .email('Formato de e-mail inválido')
-    .min(1, 'O e-mail é obrigatório'),
-  document: z
-    .string()
-    .regex(
-      /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-      'O CPF deve ter o formato XXX.XXX.XXX-XX',
-    )
-    .min(1, 'O CPF é obrigatório'),
-  favoriteColor: z
-    .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Cor inválida')
-    .min(1, 'A sua cor favorita é obrigatória'),
+  name: z.string().min(1),
+  email: z.string().email().min(1),
+  document: z.string().regex(cpfPattern).min(1),
+  favoriteColor: z.string().regex(colorPattern).min(1),
   observations: z.string(),
 });
 
@@ -51,6 +40,7 @@ const Home = () => {
     register,
     handleSubmit,
     formState: { errors },
+    clearErrors,
     watch,
     setValue,
   } = useForm<UserFormData>({
@@ -96,6 +86,8 @@ const Home = () => {
             type="text"
             placeholder="Nome completo"
             required
+            error={errors.name && 'O nome é obrigatório'}
+            onClick={() => clearErrors('name')}
             {...register('name')}
           />
 
@@ -105,6 +97,8 @@ const Home = () => {
             type="text"
             placeholder="Documento de identidade CPF"
             required
+            error={errors.document && 'Documento inválido'}
+            onClick={() => clearErrors('document')}
             {...register('document')}
           />
 
@@ -113,6 +107,8 @@ const Home = () => {
             type="email"
             placeholder="Seu melhor e-mail"
             required
+            error={errors.email && 'E-mail inválido'}
+            onClick={() => clearErrors('email')}
             {...register('email')}
           />
 

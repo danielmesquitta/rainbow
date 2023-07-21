@@ -4,7 +4,7 @@ import { InputContainer } from './styles';
 import { InputProps } from './types';
 
 export const Input = forwardRef<HTMLInputElement | InputMask, InputProps>(
-  ({ id, mask, label, ...props }, ref) => (
+  ({ id, mask, label, error, ...props }, ref) => (
     <InputContainer>
       <label htmlFor={id}>{label}</label>
 
@@ -22,6 +22,7 @@ export const Input = forwardRef<HTMLInputElement | InputMask, InputProps>(
           {...props}
         />
       )}
+      {error && <span>{error}</span>}
     </InputContainer>
   ),
 );

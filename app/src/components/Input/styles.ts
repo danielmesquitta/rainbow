@@ -19,8 +19,12 @@ export const InputContainer = styled.div`
   }
 
   label {
-    font-family: ${({ theme }) => theme.fonts.default};
     font-size: 0.875rem;
     color: ${({ theme }) => theme.colors['gray-700']};
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: ${({ theme }) => theme.colors['error-300']};
   }
 `;
