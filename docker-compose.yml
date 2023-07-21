@@ -1,7 +1,9 @@
 version: "3.8"
 
 services:
-  app:
+  server:
+    env_file:
+      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:rainbow-api.danielmesquitta.com"
@@ -17,5 +19,5 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

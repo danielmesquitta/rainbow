@@ -24,9 +24,10 @@ jobs:
             git clone https://github.com/danielmesquitta/rainbow || true
             cd rainbow
             git pull
+            echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env
             sudo kill -9 $(sudo lsof -t -i:8080) || true
-            sudo docker stop $(docker ps -aq)
-            sudo docker rmi $(docker images -q) -f || true
-            sudo docker rm $(docker ps -aq) -f || true
-            sudo docker-compose -e DATABASE_URL=${{ secrets.DATABASE_URL }} -f docker-compose.yml up -d
-            sudo docker exec rainbow-server bash -c "npm run db:deploy"
+            docker stop $(docker ps -aq) || true
+            docker rmi $(docker images -q) -f || true
+            docker rm $(docker ps -aq) -f || true
+            docker compose -f docker-compose.yml up -d
+            docker exec rainbow-server-1 bash -c "npm run db:deploy"
