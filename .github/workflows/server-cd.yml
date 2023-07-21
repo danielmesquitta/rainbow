@@ -18,4 +18,4 @@ jobs:
         run: sudo docker rm -f rainbow-server-container || true
 
       - name: Run docker container
-        run: sudo docker run -d -p 8080:8080 --name rainbow-server-container ${{ secrets.DOCKERHUB_USERNAME }}/rainbow-server -e DATABASE_URL=${{ secrets.DATABASE_URL }}
+        run: sudo docker run -d -p 80:80 --name rainbow-server-container ${{ secrets.DOCKERHUB_USERNAME }}/rainbow-server -e DATABASE_URL=${{ secrets.DATABASE_URL }}
