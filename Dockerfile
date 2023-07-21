@@ -1,12 +1,12 @@
-FROM node:alpine
+FROM node:18
 
 WORKDIR /usr/src/app
 
 COPY server/ ./
 
-RUN yarn
+RUN npm install
 
-RUN yarn build
+RUN npm run build
 
 EXPOSE 8080
 CMD [ "nest", "start" ]
