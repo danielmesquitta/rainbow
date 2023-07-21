@@ -28,4 +28,5 @@ jobs:
             sudo docker rm -f rainbow-server || true
             sudo kill -9 $(sudo lsof -t -i:8080) || true
             sudo docker build -t rainbow-server .
-            sudo docker run --name rainbow-server -d -p 8080:8080 -e DATABASE_URL=${{ secrets.DATABASE_URL }} rainbow-server
+            sudo docker run --name rainbow-server -d -p 8080:80 -e DATABASE_URL=${{ secrets.DATABASE_URL }} rainbow-server
+            sudo docker exec -it rainbow-server bash -c "npm run db:deploy"
