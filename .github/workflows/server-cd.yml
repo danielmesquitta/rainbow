@@ -14,6 +14,9 @@ jobs:
       - name: Pull Docker image from DockerHub
         run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rainbow-server:latest
 
+      - name: Kill process in port 80
+        run: sudo kill -9 $(sudo lsof -t -i:80) || true
+
       - name: Delete old docker container
         run: sudo docker rm -f rainbow-server-container || true
 
