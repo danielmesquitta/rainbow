@@ -9,7 +9,7 @@ services:
       - "traefik.frontend.rule=Host:rainbow-api.danielmesquitta.com"
     build: .
     ports:
-      - "8080:8080"
+      - "3000:3000"
     command: npm start
 
   reverse-proxy:
