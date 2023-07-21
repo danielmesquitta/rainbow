@@ -30,4 +30,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: user/$DOCKER_IMAGE:latest
+          tags: $DOCKERHUB_USERNAME/$DOCKER_IMAGE:latest
