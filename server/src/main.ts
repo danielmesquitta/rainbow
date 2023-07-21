@@ -62,7 +62,7 @@ const bootstrap = async () => {
   /**
    * Run app.
    */
-  await app.listen(process.env.PORT || 8080, process.env.HOST || '0.0.0.0');
+  await app.listen(process.env.PORT || 3000, process.env.HOST || '0.0.0.0');
 };
 
 bootstrap();
