@@ -1,0 +1,21 @@
+name: Docker Image CD
+
+on:
+  workflow_run:
+    workflows: ["Docker Image CI"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image from DockerHub
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rainbow-server:latest
+
+      - name: Delete old docker container
+        run: sudo docker rm -f rainbow-server-container || true
+
+      - name: Run docker container
+        run: sudo docker run -d -p 8080:8080 --name rainbow-server-container ${{ secrets.DOCKERHUB_USERNAME }}/rainbow-server
