@@ -1,0 +1,31 @@
+name: Server CI and CD
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: Executing remote ssh commands
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the files
+        uses: actions/checkout@v3
+
+      - name: SSH to EC2 instance and execute commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ${{ secrets.EC2_USER }}
+          script: |
+            cd /home/${{ secrets.EC2_USER }}
+            git clone https://github.com/danielmesquitta/rainbow || true
+            cd rainbow
+            git pull
+            sudo docker image rm -f rainbow-server || true
+            sudo docker rm -f rainbow-server || true
+            sudo kill -9 $(sudo lsof -t -i:8080)
+            sudo docker build -t rainbow-server .
+            sudo docker run --name rainbow-server -d -p 8080:8080 -e DATABASE_URL=${{ secrets.DATABASE_URL }} rainbow-server
