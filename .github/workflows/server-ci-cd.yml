@@ -25,7 +25,7 @@ jobs:
             cd rainbow
             git pull
             echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env
-            sudo kill -9 $(sudo lsof -t -i:3000) $(sudo lsof -t -i:8080) || true
+            sudo kill -9 $(sudo lsof -t -i:80) || true
             docker stop $(docker ps -aq) || true
             docker rmi $(docker images -q) -f || true
             docker rm $(docker ps -aq) -f || true
