@@ -25,6 +25,8 @@ jobs:
             cd rainbow
             git pull
             echo '${{ secrets.ENV }}' > .env
+            cd server
+            echo '${{ secrets.ENV }}' > .env
             echo '${{ secrets.SSL_CERTIFICATE }}' > certificate.crt
             echo '${{ secrets.SSL_PRIVATE_KEY }}' > private.key
             sudo kill -9 $(sudo lsof -t -i:443) $(sudo lsof -t -i:80) || true
