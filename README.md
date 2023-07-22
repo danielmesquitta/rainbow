@@ -51,7 +51,7 @@ $ cp .env.example .env
 # Configure .env using vim, nano or your IDE
 
 # Start
-$ npm dev
+$ npm run dev
 ```
 
 ### Start web
@@ -69,5 +69,5 @@ $ cp .env.example .env
 # Configure .env using vim, nano or your IDE
 
 # Start
-$ npm dev
+$ npm run dev
 ```

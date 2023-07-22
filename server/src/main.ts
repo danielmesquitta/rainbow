@@ -12,6 +12,7 @@ import { AppModule } from './app.module';
 const swaggerConfig = new DocumentBuilder()
   .setTitle('Rainbow')
   .setVersion('1.0')
+  .addBearerAuth()
   .build();
 
 const bootstrap = async () => {

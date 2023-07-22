@@ -8,7 +8,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IsPublic } from '~/auth/decorators/is-public.decorator';
 import { CreateUserDTO } from './dtos/create-user-dto';
 import { DeleteUserParamsDTO } from './dtos/delete-user-params-dto';
 import { GetUserParamsDTO } from './dtos/get-user-params-dto';
@@ -33,6 +34,7 @@ export class UserController {
   ) {}
 
   @Post('/')
+  @IsPublic()
   @ApiOperation({
     summary: 'Create user',
   })
@@ -41,6 +43,7 @@ export class UserController {
   }
 
   @Put('/:userId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update user',
   })
@@ -52,6 +55,7 @@ export class UserController {
   }
 
   @Delete('/:userId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete user',
   })
@@ -60,6 +64,7 @@ export class UserController {
   }
 
   @Get('/:userId')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get user',
   })
@@ -68,6 +73,7 @@ export class UserController {
   }
 
   @Get('/')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'List users',
   })

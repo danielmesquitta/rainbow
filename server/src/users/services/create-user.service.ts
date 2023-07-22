@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { toSearchable } from '~/common/utils/to-searchable.util';
 import { DatabaseService } from '~/database/services/database.service';
 import { allowedColors } from '~/users/constants/allowed-colors';
 import { CreateUserDTO } from '~/users/dtos/create-user-dto';
@@ -10,6 +11,7 @@ export class CreateUserService {
   constructor(private readonly db: DatabaseService) {}
 
   async execute({
+    name,
     document,
     email,
     favoriteColor,
@@ -60,8 +62,12 @@ export class CreateUserService {
       );
     }
 
+    const searchableName = toSearchable(name);
+
     const user = await this.db.user.create({
       data: {
+        name,
+        searchableName,
         document,
         email: formattedEmail,
         favoriteColor: formattedFavoriteColor,
