@@ -5,6 +5,8 @@ import {
   type NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
+import { resolve } from 'path';
 import { AppModule } from './app.module';
 
 const swaggerConfig = new DocumentBuilder()
@@ -13,14 +15,27 @@ const swaggerConfig = new DocumentBuilder()
   .build();
 
 const bootstrap = async () => {
+  const appConfig = {
+    logger: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    const rootDir = resolve(__dirname, '..');
+
+    const httpsOptions = {
+      key: fs.readFileSync(resolve(rootDir, 'private.key')),
+      cert: fs.readFileSync(resolve(rootDir, 'certificate.crt')),
+    };
+
+    Object.assign(appConfig, { https: httpsOptions });
+  }
+
   /**
    * Connect with fastify.
    */
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      logger: true,
-    }),
+    new FastifyAdapter(appConfig),
   );
 
   /**

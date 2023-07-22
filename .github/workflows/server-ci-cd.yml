@@ -24,7 +24,9 @@ jobs:
             git clone https://github.com/danielmesquitta/rainbow || true
             cd rainbow
             git pull
-            echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env
+            echo '${{ secrets.ENV }}' > .env
+            echo '${{ secrets.SSL_CERTIFICATE }}' > certificate.crt
+            echo '${{ secrets.SSL_PRIVATE_KEY }}' > private.key
             sudo kill -9 $(sudo lsof -t -i:80) || true
             docker stop $(docker ps -aq) || true
             docker rmi $(docker images -q) -f || true
