@@ -6,5 +6,5 @@ services:
       - .env
     build: .
     ports:
-      - "80:3000"
+      - "443:3000"
     command: npm start
