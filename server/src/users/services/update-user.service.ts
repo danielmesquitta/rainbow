@@ -52,7 +52,7 @@ export class UpdateUserService {
      */
     let formattedEmail: string;
 
-    if (email) {
+    if (email && email !== user.email) {
       formattedEmail = email.toLowerCase();
 
       const emailExists = await this.db.user.findUnique({
@@ -82,7 +82,7 @@ export class UpdateUserService {
         )
       ) {
         throw new BadRequestException(
-          `A cor favorita deve ser uma das cores do arco-íris`,
+          'A sua cor favorita deve ser uma das cores do arco-íris',
         );
       }
     }

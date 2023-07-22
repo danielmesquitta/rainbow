@@ -58,7 +58,7 @@ export class CreateUserService {
       )
     ) {
       throw new BadRequestException(
-        `A cor favorita deve ser uma das cores do arco-íris`,
+        'A sua cor favorita deve ser uma das cores do arco-íris',
       );
     }
 
