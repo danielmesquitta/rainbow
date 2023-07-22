@@ -3,6 +3,7 @@ import { toSearchable } from '~/common/utils/to-searchable.util';
 import { DatabaseService } from '~/database/services/database.service';
 import { allowedColors } from '~/users/constants/allowed-colors';
 import { CreateUserDTO } from '~/users/dtos/create-user-dto';
+import { UserEntity } from '../user.entity';
 
 type CreateUserServiceData = CreateUserDTO;
 
@@ -75,6 +76,6 @@ export class CreateUserService {
       },
     });
 
-    return user;
+    return new UserEntity(user);
   }
 }

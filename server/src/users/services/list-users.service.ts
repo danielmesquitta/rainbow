@@ -4,6 +4,7 @@ import { PaginatedResponse } from '~/common/interfaces/paginated-response.interf
 import { PaginateService } from '~/common/services/paginate.service';
 import { DatabaseService } from '~/database/services/database.service';
 import { ListUsersQueryDTO } from '~/users/dtos/list-users-query.dto';
+import { UserEntity } from '../user.entity';
 
 type ListUsersServiceData = ListUsersQueryDTO;
 
@@ -19,7 +20,7 @@ export class ListUsersService {
      * Generate pagination args and response body
      */
     const { args, response } = this.paginateService.execute<
-      PaginatedResponse<User[]>,
+      PaginatedResponse<Omit<User, 'password' | 'refreshToken'>[]>,
       Prisma.UserFindManyArgs
     >({
       pageLength,
@@ -37,7 +38,8 @@ export class ListUsersService {
     /**
      * Set response data
      */
-    response.data = users;
+    response.data = users.map((user) => new UserEntity(user));
+
     response.total = total;
 
     return response;

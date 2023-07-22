@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '~/database/services/database.service';
 import { GetUserParamsDTO } from '~/users/dtos/get-user-params-dto';
+import { UserEntity } from '../user.entity';
 
 type GetUserServiceData = GetUserParamsDTO;
 
@@ -20,6 +21,6 @@ export class GetUserService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    return user;
+    return new UserEntity(user);
   }
 }

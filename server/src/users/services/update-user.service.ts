@@ -7,6 +7,7 @@ import { DatabaseService } from '~/database/services/database.service';
 import { allowedColors } from '~/users/constants/allowed-colors';
 import { UpdateUserDTO } from '~/users/dtos/update-user-dto';
 import { UpdateUserParamsDTO } from '~/users/dtos/update-user-params-dto';
+import { UserEntity } from '../user.entity';
 
 type UpdateUserServiceData = UpdateUserDTO & UpdateUserParamsDTO;
 
@@ -99,6 +100,6 @@ export class UpdateUserService {
       },
     });
 
-    return updatedUser;
+    return new UserEntity(updatedUser);
   }
 }
