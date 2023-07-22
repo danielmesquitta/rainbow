@@ -22,17 +22,14 @@ jobs:
           script: |
             cd /home/${{ secrets.EC2_USER }}
             git clone https://github.com/danielmesquitta/rainbow || true
-            cd rainbow
+            cd rainbow/server
             git pull
-            echo '${{ secrets.ENV }}' > .env
-            cd server
             echo '${{ secrets.ENV }}' > .env
             echo '${{ secrets.SSL_CERTIFICATE }}' > certificate.crt
             echo '${{ secrets.SSL_PRIVATE_KEY }}' > private.key
-            sudo kill -9 $(sudo lsof -t -i:443) $(sudo lsof -t -i:80) || true
+            sudo kill -9 $(sudo lsof -t -i:443) || true
             docker stop $(docker ps -aq) || true
             docker rmi $(docker images -q) -f || true
             docker rm $(docker ps -aq) -f || true
-            cd ..
             docker compose -f docker-compose.yml up -d
             docker exec rainbow-server-1 bash -c "npm run db:deploy"
