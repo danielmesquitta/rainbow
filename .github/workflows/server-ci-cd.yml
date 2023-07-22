@@ -32,4 +32,3 @@ jobs:
             docker rmi $(docker images -q) -f || true
             docker rm $(docker ps -aq) -f || true
             docker compose -f docker-compose.yml up -d
-            docker exec rainbow-server-1 bash -c "npm run db:deploy"
