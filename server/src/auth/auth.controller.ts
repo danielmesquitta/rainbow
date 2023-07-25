@@ -33,7 +33,7 @@ export class AuthController {
     summary: 'Log-out',
   })
   logout(@LoggedInUser() { id }: Pick<User, 'id'>) {
-    this.logoutService.execute({ userId: id });
+    return this.logoutService.execute({ userId: id });
   }
 
   @Post('/refresh')

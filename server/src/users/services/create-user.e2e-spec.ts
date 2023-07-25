@@ -1,31 +1,39 @@
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { wait } from '~/common/utils/wait';
+import * as supertest from 'supertest';
+import { AppModule } from '~/app.module';
+import { waitForCondition } from '~/common/utils/wait-for-condition.util';
 import { DatabaseService } from '~/database/services/database.service';
 import { allowedColors } from '~/users/constants/allowed-colors';
-import { CreateUserService } from '~/users/services/create-user.service';
-import { UserModule } from '~/users/user.module';
+import { CreateUserDTO } from '../dtos/create-user-dto';
 
-describe('(e2e) createUserService() ', () => {
+describe('(POST) /users', () => {
   let db: DatabaseService;
   let moduleRef: TestingModule;
+  let app: NestFastifyApplication;
   let currTestId = 1;
-
-  let createUserService: CreateUserService;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [AppModule],
     }).compile();
 
     db = moduleRef.get(DatabaseService);
 
-    createUserService = moduleRef.get(CreateUserService);
+    app = moduleRef.createNestApplication<NestFastifyApplication>(
+      new FastifyAdapter(),
+    );
+
+    await app.init();
+    await app.getHttpAdapter().getInstance().ready();
   });
 
   const customBeforeEach = async (testId: number) => {
-    while (currTestId !== testId) {
-      await wait(10);
-    }
+    await waitForCondition(() => currTestId === testId);
+
     await db.clearDatabase();
   };
 
@@ -44,77 +52,76 @@ describe('(e2e) createUserService() ', () => {
   it('should create user', async () => {
     await customBeforeEach(1);
 
-    const user = await createUserService.execute(createUserDTO);
+    const { status, body } = await supertest(app.getHttpServer())
+      .post('/users')
+      .send(createUserDTO as CreateUserDTO);
 
-    expect(user.id).toBeTruthy();
-    expect(user.name).toBe(createUserDTO.name);
-    expect(user.searchableName).toBeTruthy();
-    expect(user.email).toBe(createUserDTO.email);
-    expect(user.document).toBe(createUserDTO.document);
-    expect(user.favoriteColor).toBe(createUserDTO.favoriteColor);
-    expect(user.observations).toBe(createUserDTO.observations);
+    expect(status).toBe(201);
+
+    expect(body.id).toBeTruthy();
+    expect(body.name).toBe(createUserDTO.name);
+    expect(body.searchableName).toBeTruthy();
+    expect(body.email).toBe(createUserDTO.email);
+    expect(body.document).toBe(createUserDTO.document);
+    expect(body.favoriteColor).toBe(createUserDTO.favoriteColor);
+    expect(body.observations).toBe(createUserDTO.observations);
   });
 
   it('should throw on duplicate email (case insensitive)', async () => {
     await customBeforeEach(2);
 
-    await createUserService.execute(createUserDTO);
-
-    try {
-      await createUserService.execute({
+    await db.user.create({
+      data: {
         name: 'Jane Doe',
         document: '987.654.321-09',
-        email: createUserDTO.email.toUpperCase(),
+        email: createUserDTO.email,
         favoriteColor: allowedColors.RED,
         observations: 'Some observations',
-      });
-    } catch (error) {
-      expect(error.status).toBe(400);
-      expect(error.message).toBe(
-        'Já existe um usuário cadastrado com este e-mail',
-      );
-    }
+      },
+    });
+
+    const { status, body } = await supertest(app.getHttpServer())
+      .post('/users')
+      .send(createUserDTO);
+
+    expect(status).toBe(400);
+
+    expect(body.message).toBe(
+      'Já existe um usuário cadastrado com este e-mail',
+    );
   });
 
   it('should throw on duplicate document', async () => {
     await customBeforeEach(3);
 
-    await createUserService.execute(createUserDTO);
-
-    try {
-      await createUserService.execute({
+    await db.user.create({
+      data: {
         name: 'Jane Doe',
         document: createUserDTO.document,
         email: 'janedoe@email.com',
         favoriteColor: allowedColors.RED,
         observations: 'Some observations',
-      });
-    } catch (error) {
-      expect(error.status).toBe(400);
-      expect(error.message).toBe(
-        'Já existe um usuário cadastrado com este CPF',
-      );
-    }
+      },
+    });
+
+    const { status, body } = await supertest(app.getHttpServer())
+      .post('/users')
+      .send(createUserDTO);
+
+    expect(status).toBe(400);
+    expect(body.message).toBe('Já existe um usuário cadastrado com este CPF');
   });
 
   it('should throw on invalid color', async () => {
     await customBeforeEach(4);
 
-    await createUserService.execute(createUserDTO);
+    const { status, body } = await supertest(app.getHttpServer())
+      .post('/users')
+      .send({ ...createUserDTO, favoriteColor: '#000000' } as CreateUserDTO);
 
-    try {
-      await createUserService.execute({
-        name: 'Jane Doe',
-        document: '987.654.321-09',
-        email: 'janedoe@email.com',
-        favoriteColor: 'invalid-color',
-        observations: 'Some observations',
-      });
-    } catch (error) {
-      expect(error.status).toBe(400);
-      expect(error.message).toBe(
-        'A sua cor favorita deve ser uma das cores do arco-íris',
-      );
-    }
+    expect(status).toBe(400);
+    expect(body.message).toBe(
+      'A sua cor favorita deve ser uma das cores do arco-íris',
+    );
   });
 });

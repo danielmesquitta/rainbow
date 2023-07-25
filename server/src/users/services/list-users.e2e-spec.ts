@@ -1,25 +1,39 @@
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as supertest from 'supertest';
+import { AppModule } from '~/app.module';
+import { LoginService } from '~/auth/services/login.service';
 import { DatabaseService } from '~/database/services/database.service';
 import { allowedColors } from '~/users/constants/allowed-colors';
-import { UserModule } from '~/users/user.module';
-import { ListUsersService } from './list-users.service';
 
-describe('(e2e) listUserService() ', () => {
+describe('(GET) /users', () => {
   let db: DatabaseService;
   let moduleRef: TestingModule;
-
-  let listUserService: ListUsersService;
+  let app: NestFastifyApplication;
+  let accessToken: string;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [AppModule],
     }).compile();
 
     db = moduleRef.get(DatabaseService);
 
-    listUserService = moduleRef.get(ListUsersService);
+    app = moduleRef.createNestApplication<NestFastifyApplication>(
+      new FastifyAdapter(),
+    );
+
+    const loginService = moduleRef.get(LoginService);
+
+    await app.init();
+    await app.getHttpAdapter().getInstance().ready();
 
     await db.clearDatabase();
+
+    await db.runSeeds();
 
     await db.user.createMany({
       data: [
@@ -41,23 +55,38 @@ describe('(e2e) listUserService() ', () => {
         },
       ],
     });
+
+    const tokens = await loginService.execute({
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PASSWORD,
+    });
+
+    accessToken = tokens.accessToken.token;
   });
 
   it('should list users', async () => {
-    const users = await listUserService.execute({});
+    const { status, body } = await supertest(app.getHttpServer())
+      .get(`/users`)
+      .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(users.data.length).toBe(2);
-    expect(users.data[0].id).toBeTruthy();
+    expect(status).toBe(200);
+    expect(body.data[0].id).toBeTruthy();
+  });
+
+  it('should reject if unauthorized', async () => {
+    const { status } = await supertest(app.getHttpServer()).get(`/users`);
+
+    expect(status).toBe(401);
   });
 
   it('should be able to paginate users listing', async () => {
-    const users = await listUserService.execute({
-      page: 1,
-      pageLength: 1,
-    });
+    const { status, body } = await supertest(app.getHttpServer())
+      .get(`/users?page=1&pageLength=1`)
+      .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(users.data.length).toBe(1);
-    expect(users.pageLength).toBe(1);
-    expect(users.total).toBe(2);
+    expect(status).toBe(200);
+    expect(body.data.length).toBe(1);
+    expect(body.pageLength).toBe(1);
+    expect(body.total).toBe(3);
   });
 });

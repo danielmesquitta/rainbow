@@ -22,6 +22,9 @@ export class PaginateService {
     args = {} as ArgsType,
     response = {} as ResponseType,
   }: PaginateServiceData<ResponseType, ArgsType>) {
+    page = Number(page);
+    pageLength = Number(pageLength);
+
     const localArgs = { ...args } as Record<string, any>;
 
     const localResponse = { ...response } as PaginatedResponse;

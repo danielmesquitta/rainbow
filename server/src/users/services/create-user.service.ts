@@ -5,7 +5,7 @@ import { allowedColors } from '~/users/constants/allowed-colors';
 import { CreateUserDTO } from '~/users/dtos/create-user-dto';
 import { UserEntity } from '../user.entity';
 
-type CreateUserServiceData = CreateUserDTO;
+export type CreateUserServiceData = CreateUserDTO;
 
 @Injectable()
 export class CreateUserService {

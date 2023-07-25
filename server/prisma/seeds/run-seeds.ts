@@ -1,7 +1,11 @@
-import { createAdminUser } from './create-admin';
+import { HashService } from '~/auth/services/hash.service';
+import { createAdminSeed } from '~/database/services/create-admin-seed.service';
+import { prisma } from './prisma';
 
 const runSeeds = async () => {
-  await createAdminUser();
+  const hashService = new HashService();
+
+  await createAdminSeed(prisma, hashService);
 };
 
 runSeeds();

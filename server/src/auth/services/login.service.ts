@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from '~/database/services/database.service';
 import { TokenType } from '../constants/token-type.constant';
 import { LoginDTO } from '../dtos/login.dto';
@@ -27,10 +27,10 @@ export class LoginService {
       where: { email },
     });
 
-    if (!user) throw new BadRequestException('E-mail ou senha incorretos');
+    if (!user) throw new UnauthorizedException('E-mail ou senha incorretos');
 
     if (!user.password)
-      throw new BadRequestException('Usuário não possui permissão');
+      throw new UnauthorizedException('Usuário não possui permissão');
 
     /**
      * Check if password is correct
@@ -41,7 +41,7 @@ export class LoginService {
     });
 
     if (!passwordMatches)
-      throw new BadRequestException('Senha ou e-mail incorretos');
+      throw new UnauthorizedException('E-mail ou senha incorretos');
 
     /**
      * Generate new access and refresh tokens

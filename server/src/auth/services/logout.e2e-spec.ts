@@ -3,23 +3,18 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
-import { randomUUID } from 'node:crypto';
 import * as supertest from 'supertest';
 import { AppModule } from '~/app.module';
-import { LoginService } from '~/auth/services/login.service';
+import { waitForCondition } from '~/common/utils/wait-for-condition.util';
 import { DatabaseService } from '~/database/services/database.service';
-import { allowedColors } from '~/users/constants/allowed-colors';
+import { LoginService } from './login.service';
 
-describe('(DELETE) /users/:userId', () => {
+describe('(POST) /auth/logout', () => {
   let db: DatabaseService;
   let moduleRef: TestingModule;
   let app: NestFastifyApplication;
-  let loginService: LoginService;
   let accessToken: string;
-
-  const deleteUserDTO = {
-    userId: '',
-  };
+  let currTestId = 1;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -32,27 +27,20 @@ describe('(DELETE) /users/:userId', () => {
       new FastifyAdapter(),
     );
 
-    loginService = moduleRef.get(LoginService);
-
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+  });
 
-    await db.clearDatabase();
+  afterEach(() => {
+    currTestId++;
+  });
 
-    await db.runSeeds();
+  const customBeforeEach = async (testId: number) => {
+    await waitForCondition(() => currTestId === testId);
 
-    const user = await db.user.create({
-      data: {
-        name: 'John Doe',
-        searchableName: 'john doe',
-        email: 'johndoe@email.com',
-        document: '123.456.789-10',
-        favoriteColor: allowedColors.BLUE,
-        observations: 'Some observations',
-      },
-    });
+    await db.resetDatabase();
 
-    deleteUserDTO.userId = user.id;
+    const loginService = moduleRef.get(LoginService);
 
     const tokens = await loginService.execute({
       email: process.env.ADMIN_EMAIL,
@@ -60,37 +48,39 @@ describe('(DELETE) /users/:userId', () => {
     });
 
     accessToken = tokens.accessToken.token;
-  });
+  };
 
-  it('should delete user', async () => {
+  it('should logout', async () => {
+    await customBeforeEach(1);
+
     const { status } = await supertest(app.getHttpServer())
-      .delete(`/users/${deleteUserDTO.userId}`)
+      .post(`/auth/logout`)
       .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(status).toBe(200);
-
-    const deletedUser = await db.user.findUnique({
-      where: {
-        id: deleteUserDTO.userId,
-      },
-    });
-
-    expect(deletedUser).toBeFalsy();
+    expect(status).toBe(201);
   });
 
-  it('should reject if unauthorized', async () => {
-    const { status } = await supertest(app.getHttpServer()).delete(
-      `/users/${deleteUserDTO.userId}`,
+  it('should throw if unauthorized', async () => {
+    await customBeforeEach(2);
+
+    const { status } = await supertest(app.getHttpServer()).post(
+      `/auth/logout`,
     );
 
     expect(status).toBe(401);
   });
 
   it('should throw if user does not exists', async () => {
-    const invalidId = randomUUID();
+    await customBeforeEach(3);
+
+    await db.user.delete({
+      where: {
+        email: process.env.ADMIN_EMAIL,
+      },
+    });
 
     const { status, body } = await supertest(app.getHttpServer())
-      .delete(`/users/${invalidId}`)
+      .post(`/auth/logout`)
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(status).toBe(404);

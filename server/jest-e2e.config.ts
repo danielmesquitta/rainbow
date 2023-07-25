@@ -1,11 +1,14 @@
 import { config } from 'dotenv';
 import { join } from 'node:path';
 
-config({ path: join(__dirname, '../.env.test') });
+config({ path: join(__dirname, '.env.test') });
 
 export default {
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/src/**/services/*.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/services/*.ts',
+    '<rootDir>/src/**/*.controller.ts',
+  ],
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   coverageReporters: ['text-summary', 'lcov'],
